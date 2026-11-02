@@ -1,0 +1,46 @@
+name: Build Fish XP 5000
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [ main, master ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@v4
+
+      - name: Install .NET SDK
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 6.0.x
+
+      - name: Restore dependencies
+        run: dotnet restore FishXP5000/FishXP5000.csproj
+
+      - name: Build mod
+        run: dotnet build FishXP5000/FishXP5000.csproj --configuration Release --no-restore
+
+      - name: Package mod
+        shell: bash
+        run: |
+          set -euo pipefail
+          DLL_PATH="$(find FishXP5000/bin/Release -type f -name 'FishXP5000.dll' -print -quit)"
+          if [ -z "$DLL_PATH" ]; then
+            echo 'FishXP5000.dll was not produced by the build.'
+            find FishXP5000/bin -maxdepth 5 -type f -print || true
+            exit 1
+          fi
+          mkdir -p release/FishXP5000
+          cp "$DLL_PATH" release/FishXP5000/FishXP5000.dll
+          cp FishXP5000/manifest.json release/FishXP5000/manifest.json
+          cd release
+          zip -r FishXP5000-Android-test.zip FishXP5000
+
+      - name: Upload installable ZIP
+        uses: actions/upload-artifact@v4
+        with:
+          name: FishXP5000-Android-test
+          path: release/FishXP5000-Android-test.zip

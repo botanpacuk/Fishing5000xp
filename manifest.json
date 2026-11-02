@@ -1,0 +1,9 @@
+{
+  "Name": "Fish XP 5000",
+  "Author": "ChatGPT",
+  "Version": "1.0.0",
+  "Description": "Awards 5000 Fishing XP for each fishing catch (keeps crab-pot XP and fishing books unchanged).",
+  "UniqueID": "ChatGPT.FishXP5000",
+  "EntryDll": "FishXP5000.dll",
+  "MinimumApiVersion": "4.3.2"
+}
